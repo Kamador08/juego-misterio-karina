@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Confirmación</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 2rem;
+    }
+    .formulario {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    input, select, button {
+      display: block;
+      width: 100%;
+      padding: 0.8rem;
+      margin-top: 1rem;
+      font-size: 1rem;
+      border-radius: 8px;
+    }
+    button {
+      background-color: #ccc;
+      color: black;
+      font-style: italic;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Confirmá tu asistencia</h1>
+  <div class="formulario">
+    <form id="form">
+      <input type="text" id="nombre" placeholder="Tu nombre" required />
+      <select id="genero">
+        <option value="femenino">Femenino</option>
+        <option value="masculino">Masculino</option>
+      </select>
+      <select id="asistencia">
+        <option value="si">Sí, asistiré</option>
+        <option value="no">No puedo asistir</option>
+      </select>
+      <button type="submit">Continuar</button>
+    </form>
+  </div>
+  <script>
+    const personajesF = ["valentina", "romina"];
+    const personajesM = ["santi", "nico", "thiago"];
+    const usados = [];
+
+    document.getElementById("form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const nombre = document.getElementById("nombre").value.trim();
+      const genero = document.getElementById("genero").value;
+      const asistencia = document.getElementById("asistencia").value;
+
+      if (asistencia === "no") {
+        window.location.href = "gracias.html";
+        return;
+      }
+
+      let lista = genero === "femenino" ? personajesF : personajesM;
+      let disponibles = lista.filter(p => !usados.includes(p));
+
+      if (disponibles.length === 0) {
+        alert("Ya se asignaron todos los personajes disponibles.");
+        return;
+      }
+
+      let personaje = disponibles[Math.floor(Math.random() * disponibles.length)];
+      usados.push(personaje);
+      window.location.href = `personaje.html?nombre=${encodeURIComponent(nombre)}&personaje=${encodeURIComponent(personaje)}`;
+    });
+  </script>
+</body>
+</html>

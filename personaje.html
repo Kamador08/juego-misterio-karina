@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tu personaje</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 2rem;
+    }
+    img {
+      max-width: 300px;
+      width: 100%;
+      height: auto;
+      margin-top: 2rem;
+      border-radius: 12px;
+    }
+    .nombre {
+      font-size: 1.5rem;
+      margin-top: 1.5rem;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h1>Este será tu personaje 🎭</h1>
+  <div class="nombre" id="nombrePersonaje"></div>
+  <img id="imagenPersonaje" src="" alt="Tu personaje">
+
+  <button id="finalizarBtn" style="
+    margin-top: 2rem;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    background-color: white;
+    color: black;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+  ">Guardar</button>
+
+  <script>
+    const finalizarBtn = document.getElementById("finalizarBtn");
+
+    finalizarBtn.addEventListener("click", async () => {
+      const nombre = localStorage.getItem("nombreJugador") || prompt("Escribí tu nombre");
+      const personaje = document.getElementById("nombrePersonaje").textContent;
+
+      if (!nombre || !personaje) {
+        alert("Falta el nombre o personaje.");
+        return;
+      }
+
+      try {
+        const response = await fetch("/.netlify/functions/guardar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nombre, personaje })
+        });
+
+        if (response.status === 409) {
+          alert("Este personaje ya fue asignado. Por favor recargá la página para obtener uno nuevo.");
+          return;
+        }
+
+        if (!response.ok) {
+          const text = await response.text();
+          alert("Ocurrió un error: " + text);
+          return;
+        }
+
+        window.location.href = "gracias.html";
+      } catch (err) {
+        alert("Error al guardar: " + err.message);
+      }
+    });
+  </script>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const personaje = params.get("personaje");
+
+    // Capitalizar primera letra
+    const nombreCapitalizado = personaje.charAt(0).toUpperCase() + personaje.slice(1);
+
+    document.getElementById("nombrePersonaje").innerText = nombreCapitalizado;
+    document.getElementById("imagenPersonaje").src = "img/" + personaje + ".png";
+  </script>
+</body>
+</html>
